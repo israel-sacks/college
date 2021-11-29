@@ -1,0 +1,15 @@
+db.students.aggregate([
+  { "$addFields": { "CourseId2": { "$toObjectId": "$CourseId" }}},
+  { "$lookup": {
+    "from": "courses",
+    "localField": "CourseId2",
+    "foreignField": "_id",
+    "as": "output"
+  }},
+{
+      $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$output", 0 ] }, "$$ROOT" ] } }
+   },
+   { $project: { output: 0 } },
+{ $out: { db: "college", coll: "vstudents" } }
+
+])
